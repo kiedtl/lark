@@ -43,26 +43,16 @@ main(int argc, char **argv)
 			break;
 		}
 	}
-	printf("debug: exedir: %s\n", buf);
+	
+	//printf("debug: exedir: %s\n", buf);
 
 	lua_pushstring(L, buf);
 	lua_setglobal(L, "_EXEDIR");
 
 	(void) luaL_dostring(L,
-		"local core\n"
-		"xpcall(function()\n"
-		"  package.path = _EXEDIR .. '/data/init.lua;' .. package.path\n"
-		"  core = require('core')\n"
-		"  core.init()\n"
-		"  core.run()\n"
-		"end, function(err)\n"
-		"  print('Error: ' .. tostring(err))\n"
-		"  print(debug.traceback(nil, 2))\n"
-		"  if core and core.on_error then\n"
-		"    pcall(core.on_error, err)\n"
-		"  end\n"
-		"  os.exit(1)\n"
-	"end)");
+		"dofile(_EXEDIR .. '/data/init.lua')\n"
+		"init()\n"
+	);
 
 	lua_close(L);
 	return 0;
