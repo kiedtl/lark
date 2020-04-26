@@ -7,14 +7,14 @@
 NAME    = leirc
 WARNING = -Wall -Wextra -pedantic -Wmissing-prototypes \
 	  -Wold-style-definition -Wno-unused-parameter
-
-INC     = -I/usr/include/lua5.3
+DEF     = -D_POSIX_C_SOURCE
+INC     = -I/usr/include/lua5.3 -Iccommon/include
 
 CC      = gcc
-CFLAGS  = -std=c99 $(WARNING) $(INC) -fno-stack-protector
+CFLAGS  = -std=c99 $(WARNING) $(INC) $(DEF)
 LDFLAGS = -fuse-ld=gold -L/usr/include/ -llua5.3 -lm -static
 
-SRC     = main.c
+SRC     = main.c dial.c irc.c
 OBJ     = $(SRC:.c=.o)
 
 DESTDIR = /
