@@ -1,10 +1,11 @@
 #include <stdio.h>
+#include <lauxlib.h>
+#include <lua.h>
+#include <lualib.h>
 #include <string.h>
 #include <unistd.h>
 
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
+#include "irc.h"
 
 lua_State *L;
 
@@ -27,6 +28,9 @@ main(int argc, char **argv)
 	}
 	lua_setglobal(L, "_ARGS");
 
+	lua_pushcfunction(L, leirc_connect);
+	lua_setglobal(L, "leirc_connect");
+
 	char buf[4096];
 	char path[512];
 	sprintf(path, "/proc/%d/exe", getpid());
@@ -47,7 +51,7 @@ main(int argc, char **argv)
 	(void) luaL_dostring(L,
 		"local core\n"
 		"xpcall(function()\n"
-		"  package.path = _EXEDIR .. '/init.lua;' .. package.path\n"
+		"  package.path = _EXEDIR .. '/data/init.lua;' .. package.path\n"
 		"  core = require('core')\n"
 		"  core.init()\n"
 		"  core.run()\n"
