@@ -32,6 +32,9 @@ main(int argc, char **argv)
 	lua_pushcfunction(L, leirc_connect);
 	lua_setglobal(L, "leirc_connect");
 
+	lua_pushcfunction(L, leirc_nodelay);
+	lua_setglobal(L, "leirc_nodelay");
+
 	lua_pushcfunction(L, leirc_write);
 	lua_setglobal(L, "leirc_write");
 

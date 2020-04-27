@@ -6,13 +6,14 @@
 
 NAME    = leirc
 WARNING = -Wall -Wextra -pedantic -Wmissing-prototypes \
-	  -Wold-style-definition -Wno-unused-parameter
+	  -Wold-style-definition -Wno-unused-parameter \
+	  -Wno-discarded-qualifiers
 DEF     = -D_POSIX_C_SOURCE -DLUA_USE_DLOPEN
 INC     = -I/usr/include/lua5.3 -Iccommon/include
 
 CC      = gcc
 CFLAGS  = -std=c99 $(WARNING) $(INC) $(DEF)
-LDFLAGS = -fuse-ld=gold -L/usr/include/ -llua5.3 -lm
+LDFLAGS = -fuse-ld=gold -L/usr/include/ -llua5.3 -lm -lncursesw
 
 SRC     = main.c dial.c irc.c
 OBJ     = $(SRC:.c=.o)
@@ -20,7 +21,7 @@ OBJ     = $(SRC:.c=.o)
 DESTDIR = /
 PREFIX  = /usr/local/
 
-all: debug
+all: debug data/share/lua/5.3/curses.lua
 
 clean:
 	rm -f $(NAME) $(OBJ)
@@ -36,5 +37,8 @@ release: $(NAME)
 
 $(NAME): $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(CFLAGS_OPT) $(LDFLAGS)
+
+data/share/lua/5.3/curses.lua:
+	cd data && luarocks install lcurses --tree .
 
 .PHONY: all debug release clean install uninstall

@@ -1,3 +1,4 @@
+#include <curses.h>
 #include <errno.h>
 #include <lauxlib.h>
 #include <lua.h>
@@ -60,16 +61,28 @@ leirc_read(lua_State *L)
 {
 	static char buf[IRC_MSG_MAX];
 
-	usize rd = 0;
-	if ((rd = fgets(&buf, sizeof(buf), server)) == NULL)
+	char *rd = NULL;
+	if ((rd = fgets((char*) &buf, sizeof(buf), server)) == NULL)
 		return luaL_error(L, "error: broken pipe.\n");
 
 	/* remove trailing newline */
-	char *p = &buf;
+	char *p = (char*) &buf;
 	while (*p) ++p;
 	*(--p) = '\0';
 
 	lua_pushstring(L, (char*) &buf);
+	return 1;
+}
+
+int
+leirc_nodelay(lua_State *L)
+{
+	WINDOW **w = (WINDOW**) luaL_checkudata(L, 1, "curses:window");
+	if (w == NULL) luaL_argerror(L, 1, "invalid window");
+	if (*w == NULL) luaL_argerror(L, 1, "attempt to use closed window");
+
+	bool bf = lua_toboolean(L, 2);
+	lua_pushboolean(L, (int) (nodelay(*w, bf) == NULL));
 	return 1;
 }
 
