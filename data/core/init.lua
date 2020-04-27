@@ -1,4 +1,6 @@
-function init()
+local core = {}
+
+function core.init()
 	leirc_connect("irc.freenode.net", 6667)
 
 	sleep(5)
@@ -16,7 +18,9 @@ function init()
 	leirc_disconnect()
 end
 
-function sleep(n)
+local function sleep(n)
 	local start = os.clock()
 	while os.clock() - start < n do end
 end
+
+return core

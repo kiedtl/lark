@@ -62,11 +62,18 @@ main(int argc, char **argv)
 
 	(void) luaL_dostring(L,
 		"xpcall(function()\n"
-		"  dofile(_EXEDIR .. '/data/init.lua')\n"
-		"  init()\n"
+		//"  dofile(_EXEDIR .. '/data/init.lua')\n"
+		//"  init()\n"
+		"  package.path = _EXEDIR .. '/data/?.lua;' .. package.path\n"
+		"  package.path = _EXEDIR .. '/data/?/init.lua;' .. package.path\n"
+		"  core = require('core')\n"
+		"  core.init()\n"
 		"end, function(err)\n"
 		"  print('Error: ' .. tostring(err))\n"
-		"  print(debug.traceback(nil, 2))\n"
+		"  print(debug.traceback(nil, 3))\n"
+		"  if core and core.on_error then\n"
+		"    pcall(core.on_error, err)\n"
+		"  end\n"
 		"  os.exit(1)\n"
 	"end)");
 
