@@ -4,6 +4,8 @@ function init()
 	sleep(5)
 
 	leirc_write("NICK leirc_test")
+	leirc_write("USER leirc_test - - :leirc_test")
+	leirc_write("PASS ")
 	leirc_write("JOIN #test")
 	leirc_write("PRIVMSG #test :test")
 
