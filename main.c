@@ -62,10 +62,10 @@ main(int argc, char **argv)
 
 	(void) luaL_dostring(L,
 		"xpcall(function()\n"
-		//"  dofile(_EXEDIR .. '/data/init.lua')\n"
-		//"  init()\n"
-		"  package.path = _EXEDIR .. '/data/?.lua;' .. package.path\n"
-		"  package.path = _EXEDIR .. '/data/?/init.lua;' .. package.path\n"
+		"  package.path  = _EXEDIR .. '/data/?.lua;' .. package.path\n"
+		"  package.path  = _EXEDIR .. '/data/?/init.lua;' .. package.path\n"
+		"  package.path  = _EXEDIR .. '/data/share/lua/5.3/?.lua;' .. package.path\n"
+		"  package.cpath = _EXEDIR .. '/data/lib/lua/5.3/?.so;' .. package.cpath\n"
 		"  core = require('core')\n"
 		"  core.init()\n"
 		"end, function(err)\n"

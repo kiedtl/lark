@@ -1,5 +1,5 @@
 #
-# signet: easy verification
+# leirc: extensible IRC client
 # (c) Kied Llaentenn
 # See the LICENSE for more information
 #
@@ -7,12 +7,12 @@
 NAME    = leirc
 WARNING = -Wall -Wextra -pedantic -Wmissing-prototypes \
 	  -Wold-style-definition -Wno-unused-parameter
-DEF     = -D_POSIX_C_SOURCE
+DEF     = -D_POSIX_C_SOURCE -DLUA_USE_DLOPEN
 INC     = -I/usr/include/lua5.3 -Iccommon/include
 
 CC      = gcc
 CFLAGS  = -std=c99 $(WARNING) $(INC) $(DEF)
-LDFLAGS = -fuse-ld=gold -L/usr/include/ -llua5.3 -lm -static
+LDFLAGS = -fuse-ld=gold -L/usr/include/ -llua5.3 -lm
 
 SRC     = main.c dial.c irc.c
 OBJ     = $(SRC:.c=.o)

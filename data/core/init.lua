@@ -1,3 +1,4 @@
+local curses = require('curses')
 local core = {}
 
 function core.init()
@@ -18,7 +19,7 @@ function core.init()
 	leirc_disconnect()
 end
 
-local function sleep(n)
+function sleep(n)
 	local start = os.clock()
 	while os.clock() - start < n do end
 end
