@@ -4,6 +4,7 @@
 #include <lualib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "dial.h"
 #include "irc.h"
@@ -36,5 +37,48 @@ leirc_connect(lua_State *L)
 			strerror(errno));
 	}
 
+	return 0;
+}
+
+/*
+ * send to server
+ */
+int
+leirc_write(lua_State *L)
+{
+	char *data = luaL_checkstring(L, 1);
+	fprintf(server, "%s\r\n", data);
+
+	return 0;
+}
+
+/*
+ * read from server
+ */
+int
+leirc_read(lua_State *L)
+{
+	static char buf[IRC_MSG_MAX];
+
+	usize rd = 0;
+	if ((rd = fgets(&buf, sizeof(buf), server)) == NULL)
+		return luaL_error(L, "error: broken pipe.\n");
+
+	/* remove trailing newline */
+	char *p = &buf;
+	while (*p) ++p;
+	*(--p) = '\0';
+
+	lua_pushstring(L, (char*) &buf);
+	return 1;
+}
+
+/*
+ * disconnect from server.
+ */
+int
+leirc_disconnect(lua_State *L)
+{
+	fclose(server);
 	return 0;
 }

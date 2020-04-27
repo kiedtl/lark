@@ -28,9 +28,20 @@ main(int argc, char **argv)
 	}
 	lua_setglobal(L, "_ARGS");
 
+	/* push C API */
 	lua_pushcfunction(L, leirc_connect);
 	lua_setglobal(L, "leirc_connect");
 
+	lua_pushcfunction(L, leirc_write);
+	lua_setglobal(L, "leirc_write");
+
+	lua_pushcfunction(L, leirc_read);
+	lua_setglobal(L, "leirc_read");
+
+	lua_pushcfunction(L, leirc_disconnect);
+	lua_setglobal(L, "leirc_disconnect");
+
+	/* get executable path */
 	char buf[4096];
 	char path[512];
 	sprintf(path, "/proc/%d/exe", getpid());
@@ -50,9 +61,14 @@ main(int argc, char **argv)
 	lua_setglobal(L, "_EXEDIR");
 
 	(void) luaL_dostring(L,
-		"dofile(_EXEDIR .. '/data/init.lua')\n"
-		"init()\n"
-	);
+		"xpcall(function()\n"
+		"  dofile(_EXEDIR .. '/data/init.lua')\n"
+		"  init()\n"
+		"end, function(err)\n"
+		"  print('Error: ' .. tostring(err))\n"
+		"  print(debug.traceback(nil, 2))\n"
+		"  os.exit(1)\n"
+	"end)");
 
 	lua_close(L);
 	return 0;
