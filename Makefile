@@ -17,7 +17,7 @@ CC      = gcc
 CFLAGS  = -std=c99 $(WARNING) $(INC) $(DEF)
 LDFLAGS = -fuse-ld=gold -L/usr/include/ -llua5.3 -lm -lncursesw
 
-SRC     = main.c strlcpy.c
+SRC     = main.c lua.c strlcpy.c
 OBJ     = $(SRC:.c=.o)
 
 DESTDIR = /

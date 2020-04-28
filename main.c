@@ -1,6 +1,8 @@
  /* See LICENSE file for license details. */
 #include <ctype.h>
+#include <curses.h>
 #include <errno.h>
+#include <lua.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,8 +13,11 @@
 
 #include "arg.h"
 #include "config.h"
+#include "lua.h"
 
 char *argv0;
+lua_State *L;
+
 static char *host = DEFAULT_HOST;
 static char *port = DEFAULT_PORT;
 static char *password;
@@ -151,6 +156,8 @@ main(int argc, char *argv[]) {
 	int n;
 	fd_set rd;
 
+	init_lua();
+
 	strlcpy(nick, user ? user : "unknown", sizeof nick);
 	ARGBEGIN {
 	case 'h':
@@ -173,6 +180,7 @@ main(int argc, char *argv[]) {
 	} ARGEND;
 
 	/* init */
+	run_init();
 	srv = fdopen(dial(host, port), "r+");
 	if (!srv)
 		eprint("fdopen:");
@@ -185,10 +193,7 @@ main(int argc, char *argv[]) {
 	setbuf(stdout, NULL);
 	setbuf(srv, NULL);
 	setbuf(stdin, NULL);
-#ifdef __OpenBSD__
-	if (pledge("stdio", NULL) == -1)
-		eprint("error: pledge:");
-#endif
+	
 	for(;;) { /* main loop */
 		FD_ZERO(&rd);
 		FD_SET(0, &rd);
@@ -219,5 +224,7 @@ main(int argc, char *argv[]) {
 			parsein(bufin);
 		}
 	}
+
+	lua_close(L);
 	return 0;
 }
