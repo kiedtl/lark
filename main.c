@@ -130,17 +130,19 @@ parsesrv(char *cmd) {
 	par = skip(cmd, ' ');
 	txt = skip(par, ':');
 	trim(par);
-	if(!strcmp("PONG", cmd))
-		return;
-	if(!strcmp("PRIVMSG", cmd))
-		pout(par, "<%s> %s", usr, txt);
-	else if(!strcmp("PING", cmd))
-		sout("PONG %s", txt);
-	else {
-		pout(usr, ">< %s (%s): %s", cmd, par, txt);
-		if(!strcmp("NICK", cmd) && !strcmp(usr, nick))
-			strlcpy(nick, txt, sizeof nick);
-	}
+	//if(!strcmp("PONG", cmd))
+	//	return;
+	//if(!strcmp("PRIVMSG", cmd))
+	//	pout(par, "<%s> %s", usr, txt);
+	//else if(!strcmp("PING", cmd))
+	//	sout("PONG %s", txt);
+	//else {
+	//	pout(usr, ">< %s (%s): %s", cmd, par, txt);
+	//	if(!strcmp("NICK", cmd) && !strcmp(usr, nick))
+	//		strlcpy(nick, txt, sizeof nick);
+	//}
+	
+	run_recieve_handler(cmd, par, txt);
 }
 
 

@@ -14,6 +14,10 @@ function core.init()
 	api.sendf("PASS %s", config.password or "")
 end
 
+function core.on_receive(cmd, pars, txt)
+	print(string.format(">< %s (%s): %s", cmd, pars, txt))
+end
+
 function core.on_error(err)
 	curses.endwin()
 	print(debug.traceback(err, 2))
