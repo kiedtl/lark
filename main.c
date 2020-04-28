@@ -180,15 +180,10 @@ main(int argc, char *argv[]) {
 	} ARGEND;
 
 	/* init */
-	run_init();
 	srv = fdopen(dial(host, port), "r+");
 	if (!srv)
 		eprint("fdopen:");
-	/* login */
-	if(password)
-		sout("PASS %s", password);
-	sout("NICK %s", nick);
-	sout("USER %s localhost %s :%s", nick, host, nick);
+	run_init(); /* login and set things up */
 	fflush(srv);
 	setbuf(stdout, NULL);
 	setbuf(srv, NULL);
