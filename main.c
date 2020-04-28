@@ -146,7 +146,7 @@ parsesrv(char *cmd) {
 
 static void
 usage(void) {
-	eprint("usage: sic [-h host] [-p port] [-n nick] [-k keyword] [-v]\n", argv0);
+	eprint("usage: leirc [-h host] [-p port] [-n nick] [-k keyword] [-v]\n", argv0);
 }
 
 int
