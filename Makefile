@@ -4,18 +4,20 @@
 # See the LICENSE for more information
 #
 
+VERSION = 0.1.0
+
 NAME    = leirc
 WARNING = -Wall -Wextra -pedantic -Wmissing-prototypes \
 	  -Wold-style-definition -Wno-unused-parameter \
 	  -Wno-discarded-qualifiers
-DEF     = -D_POSIX_C_SOURCE -DLUA_USE_DLOPEN
+DEF     = -D_POSIX_C_SOURCE -DVERSION=\"${VERSION}\" -D_GNU_SOURCE
 INC     = -I/usr/include/lua5.3 -Iccommon/include
 
 CC      = gcc
 CFLAGS  = -std=c99 $(WARNING) $(INC) $(DEF)
 LDFLAGS = -fuse-ld=gold -L/usr/include/ -llua5.3 -lm -lncursesw
 
-SRC     = main.c dial.c irc.c
+SRC     = main.c strlcpy.c
 OBJ     = $(SRC:.c=.o)
 
 DESTDIR = /

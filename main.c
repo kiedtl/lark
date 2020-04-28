@@ -1,85 +1,223 @@
+ /* See LICENSE file for license details. */
+#include <ctype.h>
+#include <errno.h>
+#include <stdarg.h>
 #include <stdio.h>
-#include <lauxlib.h>
-#include <lua.h>
-#include <lualib.h>
+#include <stdlib.h>
 #include <string.h>
+#include <sys/select.h>
+#include <time.h>
 #include <unistd.h>
 
-#include "irc.h"
+#include "arg.h"
+#include "config.h"
 
-lua_State *L;
+char *argv0;
+static char *host = DEFAULT_HOST;
+static char *port = DEFAULT_PORT;
+static char *password;
+static char nick[32];
+static char bufin[4096];
+static char bufout[4096];
+static char channel[256];
+static time_t trespond;
+static FILE *srv;
 
-int
-main(int argc, char **argv)
-{
-	L = luaL_newstate();
+#undef strlcpy
+#include "strlcpy.h"
+#include "util.c"
 
-	luaL_openlibs(L);
+static void
+pout(char *channel, char *fmt, ...) {
+	static char timestr[80];
+	time_t t;
+	va_list ap;
 
-	luaopen_table(L);
-	luaopen_io(L);
-	luaopen_string(L);
-	luaopen_math(L);
+	va_start(ap, fmt);
+	vsnprintf(bufout, sizeof bufout, fmt, ap);
+	va_end(ap);
+	t = time(NULL);
+	strftime(timestr, sizeof timestr, TIMESTAMP_FORMAT, localtime(&t));
+	fprintf(stdout, "%-12s: %s %s\n", channel, timestr, bufout);
+}
 
-	lua_newtable(L);
-	for (int i = 0; i < argc; i++) {
-		lua_pushstring(L, argv[i]);
-		lua_rawseti(L, -2, i + 1);
+static void
+sout(char *fmt, ...) {
+	va_list ap;
+
+	va_start(ap, fmt);
+	vsnprintf(bufout, sizeof bufout, fmt, ap);
+	va_end(ap);
+	fprintf(srv, "%s\r\n", bufout);
+}
+
+static void
+privmsg(char *channel, char *msg) {
+	if(channel[0] == '\0') {
+		pout("", "No channel to send to");
+		return;
 	}
-	lua_setglobal(L, "_ARGS");
+	pout(channel, "<%s> %s", nick, msg);
+	sout("PRIVMSG %s :%s", channel, msg);
+}
 
-	/* push C API */
-	lua_pushcfunction(L, leirc_connect);
-	lua_setglobal(L, "leirc_connect");
+static void
+parsein(char *s) {
+	char c, *p;
 
-	lua_pushcfunction(L, leirc_nodelay);
-	lua_setglobal(L, "leirc_nodelay");
-
-	lua_pushcfunction(L, leirc_write);
-	lua_setglobal(L, "leirc_write");
-
-	lua_pushcfunction(L, leirc_read);
-	lua_setglobal(L, "leirc_read");
-
-	lua_pushcfunction(L, leirc_disconnect);
-	lua_setglobal(L, "leirc_disconnect");
-
-	/* get executable path */
-	char buf[4096];
-	char path[512];
-	sprintf(path, "/proc/%d/exe", getpid());
-	int len = readlink(path, buf, sizeof(buf) - 1);
-	buf[len] = '\0';
-
-	for (int i = strlen(buf) - 1; i > 0; i--) {
-		if (buf[i] == '/' || buf[i] == '\\') {
-			buf[i] = '\0';
-			break;
+	if(s[0] == '\0')
+		return;
+	skip(s, '\n');
+	if(s[0] != COMMAND_PREFIX_CHARACTER) {
+		privmsg(channel, s);
+		return;
+	}
+	c = *++s;
+	if(c != '\0' && isspace(s[1])) {
+		p = s + 2;
+		switch(c) {
+		case 'j':
+			sout("JOIN %s", p);
+			if(channel[0] == '\0')
+				strlcpy(channel, p, sizeof channel);
+			return;
+		case 'l':
+			s = eat(p, isspace, 1);
+			p = eat(s, isspace, 0);
+			if(!*s)
+				s = channel;
+			if(*p)
+				*p++ = '\0';
+			if(!*p)
+				p = DEFAULT_PARTING_MESSAGE;
+			sout("PART %s :%s", s, p);
+			return;
+		case 'm':
+			s = eat(p, isspace, 1);
+			p = eat(s, isspace, 0);
+			if(*p)
+				*p++ = '\0';
+			privmsg(s, p);
+			return;
+		case 's':
+			strlcpy(channel, p, sizeof channel);
+			return;
 		}
 	}
-	
-	//printf("debug: exedir: %s\n", buf);
+	sout("%s", s);
+}
 
-	lua_pushstring(L, buf);
-	lua_setglobal(L, "_EXEDIR");
+static void
+parsesrv(char *cmd) {
+	char *usr, *par, *txt;
 
-	(void) luaL_dostring(L,
-		"xpcall(function()\n"
-		"  package.path  = _EXEDIR .. '/data/?.lua;' .. package.path\n"
-		"  package.path  = _EXEDIR .. '/data/?/init.lua;' .. package.path\n"
-		"  package.path  = _EXEDIR .. '/data/share/lua/5.3/?.lua;' .. package.path\n"
-		"  package.cpath = _EXEDIR .. '/data/lib/lua/5.3/?.so;' .. package.cpath\n"
-		"  core = require('core')\n"
-		"  core.init()\n"
-		"end, function(err)\n"
-		"  print('Error: ' .. tostring(err))\n"
-		"  print(debug.traceback(nil, 3))\n"
-		"  if core and core.on_error then\n"
-		"    pcall(core.on_error, err)\n"
-		"  end\n"
-		"  os.exit(1)\n"
-	"end)");
+	usr = host;
+	if(!cmd || !*cmd)
+		return;
+	if(cmd[0] == ':') {
+		usr = cmd + 1;
+		cmd = skip(usr, ' ');
+		if(cmd[0] == '\0')
+			return;
+		skip(usr, '!');
+	}
+	skip(cmd, '\r');
+	par = skip(cmd, ' ');
+	txt = skip(par, ':');
+	trim(par);
+	if(!strcmp("PONG", cmd))
+		return;
+	if(!strcmp("PRIVMSG", cmd))
+		pout(par, "<%s> %s", usr, txt);
+	else if(!strcmp("PING", cmd))
+		sout("PONG %s", txt);
+	else {
+		pout(usr, ">< %s (%s): %s", cmd, par, txt);
+		if(!strcmp("NICK", cmd) && !strcmp(usr, nick))
+			strlcpy(nick, txt, sizeof nick);
+	}
+}
 
-	lua_close(L);
+
+static void
+usage(void) {
+	eprint("usage: sic [-h host] [-p port] [-n nick] [-k keyword] [-v]\n", argv0);
+}
+
+int
+main(int argc, char *argv[]) {
+	struct timeval tv;
+	const char *user = getenv("USER");
+	int n;
+	fd_set rd;
+
+	strlcpy(nick, user ? user : "unknown", sizeof nick);
+	ARGBEGIN {
+	case 'h':
+		host = EARGF(usage());
+		break;
+	case 'p':
+		port = EARGF(usage());
+		break;
+	case 'n':
+		strlcpy(nick, EARGF(usage()), sizeof nick);
+		break;
+	case 'k':
+		password = EARGF(usage());
+		break;
+	case 'v':
+		eprint("sic-"VERSION", © 2005-2014 Kris Maglione, Anselm R. Garbe, Nico Golde\n");
+		break;
+	default:
+		usage();
+	} ARGEND;
+
+	/* init */
+	srv = fdopen(dial(host, port), "r+");
+	if (!srv)
+		eprint("fdopen:");
+	/* login */
+	if(password)
+		sout("PASS %s", password);
+	sout("NICK %s", nick);
+	sout("USER %s localhost %s :%s", nick, host, nick);
+	fflush(srv);
+	setbuf(stdout, NULL);
+	setbuf(srv, NULL);
+	setbuf(stdin, NULL);
+#ifdef __OpenBSD__
+	if (pledge("stdio", NULL) == -1)
+		eprint("error: pledge:");
+#endif
+	for(;;) { /* main loop */
+		FD_ZERO(&rd);
+		FD_SET(0, &rd);
+		FD_SET(fileno(srv), &rd);
+		tv.tv_sec = 120;
+		tv.tv_usec = 0;
+		n = select(fileno(srv) + 1, &rd, 0, 0, &tv);
+		if(n < 0) {
+			if(errno == EINTR)
+				continue;
+			eprint("sic: error on select():");
+		}
+		else if(n == 0) {
+			if(time(NULL) - trespond >= 300)
+				eprint("sic shutting down: parse timeout\n");
+			sout("PING %s", host);
+			continue;
+		}
+		if(FD_ISSET(fileno(srv), &rd)) {
+			if(fgets(bufin, sizeof bufin, srv) == NULL)
+				eprint("sic: remote host closed connection\n");
+			parsesrv(bufin);
+			trespond = time(NULL);
+		}
+		if(FD_ISSET(0, &rd)) {
+			if(fgets(bufin, sizeof bufin, stdin) == NULL)
+				eprint("sic: broken pipe\n");
+			parsein(bufin);
+		}
+	}
 	return 0;
 }
