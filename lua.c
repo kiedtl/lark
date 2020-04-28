@@ -4,6 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "api.h"
 #include "lua.h"
 
 extern lua_State *L;
@@ -17,6 +18,10 @@ init_lua(void)
 	luaopen_io(L);
 	luaopen_string(L);
 	luaopen_math(L);
+
+	/* register API funcs */
+	lua_pushcfunction(L, api_send);
+	lua_setglobal(L, "_builtin_send");
 
 	/* get executable path */
 	char buf[4096];

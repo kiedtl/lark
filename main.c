@@ -17,6 +17,7 @@
 
 char *argv0;
 lua_State *L;
+FILE *srv;
 
 static char *host = DEFAULT_HOST;
 static char *port = DEFAULT_PORT;
@@ -26,7 +27,6 @@ static char bufin[4096];
 static char bufout[4096];
 static char channel[256];
 static time_t trespond;
-static FILE *srv;
 
 #undef strlcpy
 #include "strlcpy.h"
