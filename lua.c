@@ -74,7 +74,7 @@ run_init(void)
 void
 run_recieve_handler(char *cmd, char *par, char *txt)
 {
-	char buf[512];
+	char buf[1048];
 	sprintf(&buf,
 		"xpcall(function()\n"
 		"  core.on_receive(\"%s\", \"%s\", \"%s\")\n"
