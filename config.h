@@ -1,5 +1,5 @@
 /* Host used when "-h" is not given */
-#define DEFAULT_HOST "irc.oftc.net"
+#define DEFAULT_HOST "irc.freenode.net"
 
 /* Port used when "-p" is not given */
 #define DEFAULT_PORT "6667"
