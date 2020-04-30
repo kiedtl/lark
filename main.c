@@ -142,7 +142,7 @@ parsesrv(char *cmd) {
 	//		strlcpy(nick, txt, sizeof nick);
 	//}
 	
-	run_recieve_handler(cmd, par, txt);
+	run_receive_handler(usr, cmd, par, txt);
 }
 
 
