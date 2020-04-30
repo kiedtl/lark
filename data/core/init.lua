@@ -20,7 +20,7 @@ function core.on_receive(usr, cmd, pars, txt)
 	if handler then
 		handler(usr, pars, txt)
 	else
-		core.printf("%12s %s (%s): %s", ">-<", cmd, pars, txt)
+		core.printf("%12s %s: %s", "-?-", cmd, txt)
 	end
 end
 
