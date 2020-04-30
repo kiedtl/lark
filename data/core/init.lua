@@ -13,14 +13,14 @@ function core.init()
 	api.sendf("PASS %s", config.password or "")
 end
 
-function core.on_receive(cmd, pars, txt)
+function core.on_receive(usr, cmd, pars, txt)
 	local handlers = require('core.handlers')
 	local handler = handlers[cmd]
 
 	if handler then
-		handler(pars, txt)
+		handler(usr, pars, txt)
 	else
-		print(string.format(">< %s (%s): %s", cmd, pars, txt))
+		core.printf("%12s %s (%s): %s", ">-<", cmd, pars, txt)
 	end
 end
 
@@ -29,31 +29,9 @@ function core.on_error(err)
 	os.exit(2)
 end
 
-function core.parse_prefix(prefix)
-	-- TODO: move to irc module
-	local user = {}
-
-	if prefix then
-		user.type,
-		user.nickname,
-		user.username,
-		user.hostname = prefix:match("^([%+@]*)(.+)!(.+)@(.+)$")
-	end
-
-	if user.type then
-		local type = {op = false, halfop = false, voice = false}
-
-		for c in user.type:gmatch(".") do
-			if     c == "@" then type.op = true
-			elseif c == "%" then type.halfop = true
-			elseif c == "+" then type.voice = true
-			end
-		end
-
-		user.type = type
-	end
-
-	return user
+function core.printf(fmt, ...)
+	-- TODO: move to core.common
+	print(string.format(fmt, ...))
 end
 
 return core
