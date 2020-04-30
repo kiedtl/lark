@@ -20,6 +20,8 @@ init_lua(void)
 	luaopen_math(L);
 
 	/* register API funcs */
+	lua_pushcfunction(L, api_connect);
+	lua_setglobal(L, "_builtin_connect");
 	lua_pushcfunction(L, api_send);
 	lua_setglobal(L, "_builtin_send");
 

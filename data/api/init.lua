@@ -1,4 +1,13 @@
+-- a thin wrapper around the builtin functions
+-- provided by leirc:
+--     _builtin_connect
+--     _builtin_send
+
 local api = {}
+
+function api.connect(host, port)
+	_builtin_connect(host, port)
+end
 
 function api.send(data)
 	_builtin_send(data)

@@ -18,19 +18,19 @@
 char *argv0;
 lua_State *L;
 FILE *srv;
+char bufout[4096];
 
 static char *host = DEFAULT_HOST;
 static char *port = DEFAULT_PORT;
 static char *password;
 static char nick[32];
 static char bufin[4096];
-static char bufout[4096];
 static char channel[256];
 static time_t trespond;
 
 #undef strlcpy
 #include "strlcpy.h"
-#include "util.c"
+#include "util.h"
 
 static void
 pout(char *channel, char *fmt, ...) {
@@ -182,10 +182,7 @@ main(int argc, char *argv[]) {
 	} ARGEND;
 
 	/* init */
-	srv = fdopen(dial(host, port), "r+");
-	if (!srv)
-		eprint("fdopen:");
-	run_init(); /* login and set things up */
+	run_init(); /* connect, login and set things up */
 	fflush(srv);
 	setbuf(stdout, NULL);
 	setbuf(srv, NULL);

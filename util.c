@@ -1,9 +1,20 @@
 /* See LICENSE file for license details. */
+#include <ctype.h>
+#include <errno.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
-static void
+#include "util.h"
+
+extern char bufout[4096];
+
+void
 eprint(const char *fmt, ...) {
 	va_list ap;
 
@@ -16,7 +27,7 @@ eprint(const char *fmt, ...) {
 	exit(1);
 }
 
-static int
+int
 dial(char *host, char *port) {
 	static struct addrinfo hints;
 	int srv;
@@ -40,14 +51,14 @@ dial(char *host, char *port) {
 	return srv;
 }
 
-static char *
+char *
 eat(char *s, int (*p)(int), int r) {
 	while(*s != '\0' && p(*s) == r)
 		s++;
 	return s;
 }
 
-static char*
+char*
 skip(char *s, char c) {
 	while(*s != c && *s != '\0')
 		s++;
@@ -56,7 +67,7 @@ skip(char *s, char c) {
 	return s;
 }
 
-static void
+void
 trim(char *s) {
 	char *e;
 
