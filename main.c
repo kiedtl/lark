@@ -185,14 +185,22 @@ main(int argc, char *argv[]) {
 			eprint("sic: error on select():");
 		}
 		else if(n == 0) {
-			if(time(NULL) - trespond >= 300)
+			if(time(NULL) - trespond >= 300) {
+				/* TODO: add on_timeout handler */
 				eprint("sic shutting down: parse timeout\n");
+			}
+
+			/* TODO: add on_noresponse handler */
 			//sout("PING %s", host);
 			continue;
 		}
 		if(FD_ISSET(fileno(srv), &rd)) {
-			if(fgets(bufin, sizeof bufin, srv) == NULL)
+			if(fgets(bufin, sizeof bufin, srv) == NULL) {
+				/* TODO: add on_closedconnection handler */
 				eprint("sic: remote host closed connection\n");
+			}
+
+			/* TODO: port parsesrv() to lua */
 			parsesrv(bufin);
 			trespond = time(NULL);
 		}
