@@ -1,8 +1,8 @@
 -- TODO: move to config
 
 local api    = require('api')
-local core   = require('core')
-local printf = core.printf
+local util   = require('core.util')
+local printf = util.printf
 local config = require('config')
 
 local handlers = {}
