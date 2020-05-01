@@ -1,4 +1,4 @@
- /* See LICENSE file for license details. */
+/* See LICENSE file for license details. */
 #include <ctype.h>
 #include <curses.h>
 #include <errno.h>
@@ -20,9 +20,6 @@ lua_State *L;
 FILE *srv;
 char bufout[4096];
 
-static char *host = DEFAULT_HOST;
-static char *port = DEFAULT_PORT;
-static char *password;
 static char nick[32];
 static char bufin[4096];
 static char channel[256];
@@ -114,9 +111,8 @@ parsein(char *s) {
 
 static void
 parsesrv(char *cmd) {
-	char *usr, *par, *txt;
+	char *usr = "", *par, *txt;
 
-	usr = host;
 	if(!cmd || !*cmd)
 		return;
 	if(cmd[0] == ':') {
@@ -162,20 +158,8 @@ main(int argc, char *argv[]) {
 
 	strlcpy(nick, user ? user : "unknown", sizeof nick);
 	ARGBEGIN {
-	case 'h':
-		host = EARGF(usage());
-		break;
-	case 'p':
-		port = EARGF(usage());
-		break;
-	case 'n':
-		strlcpy(nick, EARGF(usage()), sizeof nick);
-		break;
-	case 'k':
-		password = EARGF(usage());
-		break;
 	case 'v':
-		eprint("sic-"VERSION", © 2005-2014 Kris Maglione, Anselm R. Garbe, Nico Golde\n");
+		printf("sic-"VERSION", © 2005-2014 Kris Maglione, Anselm R. Garbe, Nico Golde\n");
 		break;
 	default:
 		usage();
@@ -203,7 +187,7 @@ main(int argc, char *argv[]) {
 		else if(n == 0) {
 			if(time(NULL) - trespond >= 300)
 				eprint("sic shutting down: parse timeout\n");
-			sout("PING %s", host);
+			//sout("PING %s", host);
 			continue;
 		}
 		if(FD_ISSET(fileno(srv), &rd)) {
