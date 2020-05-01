@@ -141,12 +141,6 @@ parsesrv(char *cmd) {
 	run_receive_handler(usr, cmd, par, txt);
 }
 
-
-static void
-usage(void) {
-	eprint("usage: leirc [-h host] [-p port] [-n nick] [-k keyword] [-v]\n", argv0);
-}
-
 int
 main(int argc, char *argv[]) {
 	struct timeval tv;
@@ -158,11 +152,17 @@ main(int argc, char *argv[]) {
 
 	strlcpy(nick, user ? user : "unknown", sizeof nick);
 	ARGBEGIN {
-	case 'v':
-		printf("sic-"VERSION", © 2005-2014 Kris Maglione, Anselm R. Garbe, Nico Golde\n");
+	case 'V':
+		printf("leirc v%s\n", VERSION);
+		return 0;
+		break;
+	case 'h':
+		printf("usage: %s [-h] [-V]\n", argv0);
+		return 0;
 		break;
 	default:
-		usage();
+		eprint("leirc: invalid option -- '%c'\n", ARGC());
+		break;
 	} ARGEND;
 
 	/* init */
