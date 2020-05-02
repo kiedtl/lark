@@ -200,7 +200,6 @@ main(int argc, char *argv[]) {
 				eprint("sic: remote host closed connection\n");
 			}
 
-			/* TODO: port parsesrv() to lua */
 			parsesrv(bufin);
 			trespond = time(NULL);
 		}
@@ -208,6 +207,7 @@ main(int argc, char *argv[]) {
 		if(FD_ISSET(0, &rd)) {
 			if(fgets(bufin, sizeof bufin, stdin) == NULL)
 				eprint("sic: broken pipe\n");
+			/* TODO: port parsein() to lua */
 			parsein(bufin);
 		}
 	}
