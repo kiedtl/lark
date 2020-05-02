@@ -23,7 +23,7 @@ config.password = nil
 -- --- --- --- ---
 
 -- default parting message that is send with
--- /quit command.
+-- the /quit or /part commands.
 config.parting = "Bye bye"
 
 -- character that inputs must be prefixed with
