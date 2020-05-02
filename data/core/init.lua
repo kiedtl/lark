@@ -36,7 +36,7 @@ function core.on_receive(usr, cmd, pars, txt)
 	if handler then
 		handler(usr, pars, txt)
 	else
-		printf("%12s %s: %s", "-?-", cmd, txt)
+		printf("%12s %s: %s\n", "-?-", cmd, txt)
 	end
 end
 

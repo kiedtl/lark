@@ -1,7 +1,7 @@
 local util = {}
 
 function util.printf(fmt, ...)
-	print(string.format(fmt, ...))
+	io.write(string.format(fmt, ...))
 end
 
 function util.getHostname()
