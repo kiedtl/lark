@@ -113,6 +113,9 @@ run_timeout_handler(int trespond)
 void
 run_sig_handler(int sig, siginfo_t *si, void *unused)
 {
+	/* TODO: refactor this to only use signal-safe
+	 * functions somehow. */
+
 	/*
 	 * TODO: currently only handles SIGINT,
 	 * in future should also handle SIGTERM,
