@@ -61,9 +61,10 @@ end
 
 -- handle errors, SIGINT, etc
 function core.on_quit()
-	io.write('sending quit...')
-	api.sendf("QUIT %s", config.parting)
-	io.write(" done\n")
+	printf("%12s %s", "-!-", "sending quit... ")
+	api.sendf("QUIT :#test %s", config.parting)
+	printf("done\n")
+
 	os.exit(1)
 end
 
