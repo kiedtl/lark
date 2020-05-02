@@ -3,6 +3,7 @@
 #include <curses.h>
 #include <errno.h>
 #include <lua.h>
+#include <signal.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -172,7 +173,11 @@ main(int argc, char *argv[]) {
 	setbuf(srv, NULL);
 	setbuf(stdin, NULL);
 
-	// TODO: add sigint handler
+	struct sigaction sa;
+	sa.sa_flags = SA_SIGINFO;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_sigaction = run_sig_handler;
+	sigaction(SIGINT, &sa, NULL);
 	
 	for(;;) { /* main loop */
 		FD_ZERO(&rd);

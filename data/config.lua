@@ -8,6 +8,8 @@ config.realname = "Kiëd Llaentenn"
 config.nickname = "wchar_t"
 config.password = nil
 
+config.parting  = "Bye bye"
+
 -- TODO:
 --   default mode (to be send with USER msg)
 

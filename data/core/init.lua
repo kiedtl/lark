@@ -45,7 +45,7 @@ function core.on_timeout(last_receive)
 		-- we pinged the server but they didn't respond,
 		-- get the hell outta here
 		io.stderr:write("leirc: error: timeout reached.\n")
-		os.exit(3)
+		core.on_quit()
 	else
 		-- ping the server to check if they're still
 		-- there
@@ -56,7 +56,15 @@ end
 function core.on_error(err)
 	io.stderr:write(debug.traceback(err, 2))
 	io.stderr:write("\n")
-	os.exit(2)
+	core.on_quit()
+end
+
+-- handle errors, SIGINT, etc
+function core.on_quit()
+	io.write('sending quit...')
+	api.sendf("QUIT %s", config.parting)
+	io.write(" done\n")
+	os.exit(1)
 end
 
 return core

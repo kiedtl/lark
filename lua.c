@@ -1,6 +1,7 @@
 #include <lauxlib.h>
 #include <lua.h>
 #include <lualib.h>
+#include <signal.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -77,7 +78,7 @@ void
 run_receive_handler(char *usr, char *cmd, char *par, char *txt)
 {
 	char buf[1048];
-	sprintf(&buf,
+	sprintf((char*) &buf,
 		"xpcall(function()\n"
 		"  core.on_receive(\"%s\", \"%s\", \"%s\", \"%s\")\n"
 		"end, function(err)\n"
@@ -88,14 +89,14 @@ run_receive_handler(char *usr, char *cmd, char *par, char *txt)
 		"  end\n"
 		"  os.exit(1)\n"
 	"end)", usr, cmd, par, txt);
-	(void) luaL_dostring(L, &buf);
+	(void) luaL_dostring(L, (char*) &buf);
 }
 
 void
 run_timeout_handler(int trespond)
 {
-	char buf[1048];
-	sprintf(&buf,
+	char buf[512];
+	sprintf((char*) &buf,
 		"xpcall(function()\n"
 		"  core.on_timeout(%i)\n"
 		"end, function(err)\n"
@@ -106,5 +107,26 @@ run_timeout_handler(int trespond)
 		"  end\n"
 		"  os.exit(1)\n"
 	"end)", trespond);
-	(void) luaL_dostring(L, &buf);
+	(void) luaL_dostring(L, (char*) &buf);
+}
+
+void
+run_sig_handler(int sig, siginfo_t *si, void *unused)
+{
+	/*
+	 * TODO: currently only handles SIGINT,
+	 * in future should also handle SIGTERM,
+	 * SIGWINCH, etc
+	 */
+	(void) luaL_dostring(L,
+		"xpcall(function()\n"
+		"  core.on_quit()\n"
+		"end, function(err)\n"
+		"  print('Error: ' .. tostring(err))\n"
+		"  print(debug.traceback(nil, 3))\n"
+		"  if core and core.on_error then\n"
+		"    pcall(core.on_error, err)\n"
+		"  end\n"
+		"  os.exit(1)\n"
+	"end)");
 }
