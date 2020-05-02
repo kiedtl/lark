@@ -40,8 +40,22 @@ function core.on_receive(usr, cmd, pars, txt)
 	end
 end
 
+function core.on_timeout(last_receive)
+	if os.time() - last_receive >= 512 then
+		-- we pinged the server but they didn't respond,
+		-- get the hell outta here
+		io.stderr:write("leirc: error: timeout reached.\n")
+		os.exit(3)
+	else
+		-- ping the server to check if they're still
+		-- there
+		api.sendf("PING %s", config.server);
+	end
+end
+
 function core.on_error(err)
-	print(debug.traceback(err, 2))
+	io.stderr:write(debug.traceback(err, 2))
+	io.stderr:write("\n")
 	os.exit(2)
 end
 

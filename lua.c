@@ -90,3 +90,21 @@ run_receive_handler(char *usr, char *cmd, char *par, char *txt)
 	"end)", usr, cmd, par, txt);
 	(void) luaL_dostring(L, &buf);
 }
+
+void
+run_timeout_handler(int trespond)
+{
+	char buf[1048];
+	sprintf(&buf,
+		"xpcall(function()\n"
+		"  core.on_timeout(%i)\n"
+		"end, function(err)\n"
+		"  print('Error: ' .. tostring(err))\n"
+		"  print(debug.traceback(nil, 3))\n"
+		"  if core and core.on_error then\n"
+		"    pcall(core.on_error, err)\n"
+		"  end\n"
+		"  os.exit(1)\n"
+	"end)", trespond);
+	(void) luaL_dostring(L, &buf);
+}

@@ -171,6 +171,8 @@ main(int argc, char *argv[]) {
 	setbuf(stdout, NULL);
 	setbuf(srv, NULL);
 	setbuf(stdin, NULL);
+
+	// TODO: add sigint handler
 	
 	for(;;) { /* main loop */
 		FD_ZERO(&rd);
@@ -185,14 +187,7 @@ main(int argc, char *argv[]) {
 			eprint("sic: error on select():");
 		}
 		else if(n == 0) {
-			if(time(NULL) - trespond >= 300) {
-				/* TODO: add on_timeout handler */
-				eprint("sic shutting down: parse timeout\n");
-			}
-
-			/* TODO: add on_noresponse handler */
-			//sout("PING %s", host);
-			continue;
+			run_timeout_handler(trespond);
 		}
 		if(FD_ISSET(fileno(srv), &rd)) {
 			if(fgets(bufin, sizeof bufin, srv) == NULL) {
