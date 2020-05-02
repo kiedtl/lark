@@ -181,14 +181,14 @@ main(int argc, char *argv[]) {
 		tv.tv_sec = 120;
 		tv.tv_usec = 0;
 		n = select(fileno(srv) + 1, &rd, 0, 0, &tv);
-		if(n < 0) {
+		if (n < 0) {
 			if(errno == EINTR)
 				continue;
 			eprint("sic: error on select():");
-		}
-		else if(n == 0) {
+		} else if (n == 0) {
 			run_timeout_handler(trespond);
 		}
+
 		if(FD_ISSET(fileno(srv), &rd)) {
 			if(fgets(bufin, sizeof bufin, srv) == NULL) {
 				/* TODO: add on_closedconnection handler */
@@ -199,6 +199,7 @@ main(int argc, char *argv[]) {
 			parsesrv(bufin);
 			trespond = time(NULL);
 		}
+
 		if(FD_ISSET(0, &rd)) {
 			if(fgets(bufin, sizeof bufin, stdin) == NULL)
 				eprint("sic: broken pipe\n");
