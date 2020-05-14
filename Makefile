@@ -13,9 +13,9 @@ WARNING = -Wall -Wextra -pedantic -Wmissing-prototypes \
 DEF     = -D_POSIX_C_SOURCE -DVERSION=\"${VERSION}\" -D_GNU_SOURCE
 INC     = -I/usr/include/lua5.3 -Iccommon/include
 
-CC      = gcc
+CC      = cc
 CFLAGS  = -std=c99 $(WARNING) $(INC) $(DEF)
-LDFLAGS = -fuse-ld=gold -L/usr/include/ -llua5.3 -lm -lncursesw
+LDFLAGS = -fuse-ld=gold -L/usr/include/ -llua5.3 -lm
 
 SRC     = main.c api.c lua.c strlcpy.c util.c
 OBJ     = $(SRC:.c=.o)
@@ -23,7 +23,7 @@ OBJ     = $(SRC:.c=.o)
 DESTDIR = /
 PREFIX  = /usr/local/
 
-all: debug data/share/lua/5.3/curses.lua
+all: debug
 
 clean:
 	rm -f $(NAME) $(OBJ)
@@ -39,8 +39,5 @@ release: $(NAME)
 
 $(NAME): $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(CFLAGS_OPT) $(LDFLAGS)
-
-data/share/lua/5.3/curses.lua:
-	cd data && luarocks install lcurses --tree .
 
 .PHONY: all debug release clean install uninstall
