@@ -12,6 +12,7 @@
 #include <unistd.h>
 
 #include "arg.h"
+#include "die.h"
 #include "lua.h"
 
 char *argv0;
@@ -65,7 +66,7 @@ main(int argc, char *argv[]) {
 		return 0;
 		break;
 	default:
-		eprint("leirc: invalid option -- '%c'\n", ARGC());
+		die("leirc: invalid option -- '%c'\n", ARGC());
 		break;
 	} ARGEND;
 
@@ -91,7 +92,7 @@ main(int argc, char *argv[]) {
 		if (n < 0) {
 			if(errno == EINTR)
 				continue;
-			eprint("sic: error on select():");
+			die("sic: error on select():");
 		} else if (n == 0) {
 			run_timeout_handler(trespond);
 		}
@@ -99,7 +100,7 @@ main(int argc, char *argv[]) {
 		if(FD_ISSET(fileno(srv), &rd)) {
 			if(fgets(bufin, sizeof bufin, srv) == NULL) {
 				/* TODO: add on_closedconnection handler */
-				eprint("sic: remote host closed connection\n");
+				die("sic: remote host closed connection\n");
 			}
 
 			parsesrv(bufin);
