@@ -12,7 +12,6 @@
 #include <unistd.h>
 
 #include "arg.h"
-#include "config.h"
 #include "lua.h"
 
 char *argv0;
@@ -55,6 +54,7 @@ main(int argc, char *argv[]) {
 
 	init_lua();
 
+	/* TODO: move argument parsing to Lua */
 	ARGBEGIN {
 	case 'V':
 		printf("leirc v%s\n", VERSION);
