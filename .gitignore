@@ -1,5 +1,6 @@
+# ignore compiled files
 *.o
 leirc
 
-data/lib
-data/share
+# ignore vim's swap files
+**/*.sw[po]
