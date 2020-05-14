@@ -12,18 +12,19 @@
 
 #include "util.h"
 
-extern char bufout[4096];
-
 void
 eprint(const char *fmt, ...) {
-	va_list ap;
+	char bufout[4096];
 
+	va_list ap;
 	va_start(ap, fmt);
 	vsnprintf(bufout, sizeof bufout, fmt, ap);
 	va_end(ap);
 	fprintf(stderr, "%s", bufout);
+
 	if(fmt[0] && fmt[strlen(fmt) - 1] == ':')
 		fprintf(stderr, " %s\n", strerror(errno));
+
 	exit(1);
 }
 
