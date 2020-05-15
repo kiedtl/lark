@@ -15,9 +15,9 @@ config.port   = 6667
 -- NOTE: config.password is simply a password
 -- that is sent to servers that require a password
 -- for connecting. It IS NOT a NickServ password.
-config.username = "larkbot"
+config.username = "larkbottest"
 config.realname = "Lark Bot Account"
-config.nickname = "larkbot"
+config.nickname = "larkbottest"
 config.password = nil
 
 -- --- --- --- ---

@@ -28,6 +28,11 @@ function core.init()
 
 	-- send password
 	api.sendf("PASS %s", config.password or "")
+
+	-- join channels
+	for chan = 1, #config.channels do
+		api.sendf("JOIN %s", config.channels[chan])
+	end
 end
 
 function core.on_receive(usr, cmd, pars, txt)
