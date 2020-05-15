@@ -1,4 +1,3 @@
-- print date, channel along with regular outputs
 - add autojoin chans
 - add '-d' flag/LARK_DATADIR env var to change location of data directory
 
