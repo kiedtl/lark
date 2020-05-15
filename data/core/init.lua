@@ -61,7 +61,8 @@ end
 
 -- handle errors, SIGINT, etc
 function core.on_quit()
-	printf("%12s %s", "-!-", "sending quit... ")
+	printf("%12s %s", "-!-",
+		"recieved exit, sending quit to host... ")
 	api.sendf("QUIT :%s", config.parting)
 	printf("done\n")
 
