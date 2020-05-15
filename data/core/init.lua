@@ -32,11 +32,16 @@ end
 
 function core.on_receive(usr, cmd, pars, txt)
 	local handler = handlers[cmd]
+	local chan    = pars or config.server
+	local time    = os.date("%H%M")
 
 	if handler then
-		handler(usr, pars, txt)
+		local data = handler(usr, pars, txt)
+		if data then
+			printf("%s: %s: %s", pars, time, data)
+		end
 	else
-		printf("%12s %s: %s\n", "-?-", cmd, txt)
+		printf("%s: %s: %12s %s: %s\n", "-?-", pars, time, cmd, txt)
 	end
 end
 

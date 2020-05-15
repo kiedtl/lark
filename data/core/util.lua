@@ -1,5 +1,9 @@
 local util = {}
 
+function util.format(...)
+	return string.format(...)
+end
+
 function util.printf(fmt, ...)
 	io.write(string.format(fmt, ...))
 end

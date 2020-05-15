@@ -2,7 +2,7 @@
 
 local api    = require('api')
 local util   = require('core.util')
-local printf = util.printf
+local format = util.format
 local config = require('config')
 
 local handlers = {}
@@ -11,11 +11,11 @@ function handler_generic(user, pars, args)
 	-- handler random server messages
 	-- e.g. MOTD output, etc
 
-	printf("%12s %s\n", "", args)
+	return format("%12s %s\n", "", args)
 end
 
 function handler_error(user, pars, args)
-	printf("%12s %s\n", "-!-", args)
+	return format("%12s %s\n", "-!-", args)
 end
 
 -- --- --- --- ---
@@ -32,34 +32,34 @@ handlers["PING"] = function(user, pars, args)
 end
 
 handlers["PRIVMSG"] = function(user, pars, args)
-	printf("%12s %s\n", user, args)
+	return format("%12s %s\n", user, args)
 end
 
 handlers["NOTICE"] = function(user, pars, args)
-	printf("%12s %s\n", "NOTE", args)
+	return format("%12s %s\n", "NOTE", args)
 end
 
 handlers["JOIN"] = function(user, pars, args)
-	printf("%12s %s has joined %s\n", "-->", user, args)
+	return format("%12s %s has joined %s\n", "-->", user, args)
 end
 
 handlers["PART"] = function(user, pars, args)
-	printf("%12s %s has left %s\n", "<--", user, args)
+	return format("%12s %s has left %s\n", "<--", user, args)
 end
 
 handlers["QUIT"] = function(user, pars, args)
-	printf("%12s %s has quit (quit: %s)\n", "<--", user, args)
+	return format("%12s %s has quit (quit: %s)\n", "<--", user, args)
 end
 
 handlers["NICK"] = function(user, pars, args)
-	printf("%12s %s is now known as %s\n", "--@", user, args)
 	if user == config.nickname then
 		config.nickname = user
 	end
+	return format("%12s %s is now known as %s\n", "--@", user, args)
 end
 
 handlers["MODE"] = function(user, pars, args)
-	printf("%12s mode change: %s\n", "-+-", args)
+	return format("%12s mode change: %s\n", "-+-", args)
 end
 
 -- generic messages
