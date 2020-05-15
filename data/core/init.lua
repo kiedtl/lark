@@ -37,16 +37,20 @@ end
 
 function core.on_receive(usr, cmd, pars, txt)
 	local handler = handlers[cmd]
-	local chan    = pars or config.server
 	local time    = os.date("%H%M")
+
+	local chan    = config.server
+	if cmd == "PRIVMSG" then
+		chan = pars
+	end
 
 	if handler then
 		local data = handler(usr, pars, txt)
 		if data then
-			printf("%s: %s: %s", pars, time, data)
+			printf("%s: %s: %s", chan, time, data)
 		end
 	else
-		printf("%s: %s: %12s %s: %s\n", "-?-", pars, time, cmd, txt)
+		printf("%s: %s: %12s %s: %s\n", "-?-", chan, time, cmd, txt)
 	end
 end
 
