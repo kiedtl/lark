@@ -45,7 +45,7 @@ function core.on_timeout(last_receive)
 		-- we pinged the server but they didn't respond,
 		-- get the hell outta here
 		io.stderr:write("lark: error: timeout reached.\n")
-		core.on_quit()
+		os.exit(1)
 	else
 		-- ping the server to check if they're still
 		-- there
