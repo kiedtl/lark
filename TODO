@@ -1,4 +1,3 @@
-- add autojoin chans
 - add '-d' flag/LARK_DATADIR env var to change location of data directory
 
 misc: grep -nE 'XXX|TODO' -R
