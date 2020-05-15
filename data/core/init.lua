@@ -1,6 +1,5 @@
 local api      = require('api')
 local config   = require('config')
-local handlers = require('core.handlers')
 local util     = require('core.util')
 local printf   = util.printf
 
@@ -36,22 +35,12 @@ function core.init()
 end
 
 function core.on_receive(usr, cmd, pars, txt)
-	local handler = handlers[cmd]
-	local time    = os.date("%H%M")
-
 	local chan    = config.server
 	if cmd == "PRIVMSG" then
 		chan = pars
 	end
 
-	if handler then
-		local data = handler(usr, pars, txt)
-		if data then
-			printf("%s: %s: %s", chan, time, data)
-		end
-	else
-		printf("%s: %s: %12s %s: %s\n", "-?-", chan, time, cmd, txt)
-	end
+	printf("%s: %12s %s: %s\n", chan, "-?-", cmd, txt)
 end
 
 function core.on_timeout(last_receive)
