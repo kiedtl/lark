@@ -58,7 +58,7 @@ main(int argc, char *argv[]) {
 	/* TODO: move argument parsing to Lua */
 	ARGBEGIN {
 	case 'V':
-		printf("leirc v%s\n", VERSION);
+		printf("lark v%s\n", VERSION);
 		return 0;
 		break;
 	case 'h':
@@ -66,7 +66,7 @@ main(int argc, char *argv[]) {
 		return 0;
 		break;
 	default:
-		die("leirc: invalid option -- '%c'\n", ARGC());
+		die("lark: invalid option -- '%c'\n", ARGC());
 		break;
 	} ARGEND;
 

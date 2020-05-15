@@ -1,6 +1,6 @@
 # ignore compiled files
 *.o
-leirc
+lark
 
 # ignore vim's swap files
 **/*.sw[po]

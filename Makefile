@@ -1,12 +1,12 @@
 #
-# leirc: extensible IRC client
+# lark: generic lua-extensible irc bot
 # (c) Kied Llaentenn
 # See the LICENSE for more information
 #
 
 VERSION = 0.1.0
 
-NAME    = leirc
+NAME    = lark
 WARNING = -Wall -Wextra -pedantic -Wmissing-prototypes \
 	  -Wold-style-definition -Wno-unused-parameter \
 	  -Wno-discarded-qualifiers

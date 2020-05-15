@@ -1,7 +1,7 @@
--- a thin wrapper around the builtin functions
--- provided by leirc:
---     _builtin_connect
---     _builtin_send
+-- a thin wrapper around the builtin
+-- functions provided by lark:
+--     * _builtin_connect
+--     * _builtin_send
 
 local api = {}
 

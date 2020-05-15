@@ -44,7 +44,7 @@ function core.on_timeout(last_receive)
 	if os.time() - last_receive >= 512 then
 		-- we pinged the server but they didn't respond,
 		-- get the hell outta here
-		io.stderr:write("leirc: error: timeout reached.\n")
+		io.stderr:write("lark: error: timeout reached.\n")
 		core.on_quit()
 	else
 		-- ping the server to check if they're still
