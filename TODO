@@ -1,3 +1,6 @@
 - add '-d' flag/LARK_DATADIR env var to change location of data directory
+- write README
+- write lark(1)
+- execute lua handlers in the "proper" fashion
 
 misc: grep -nE 'XXX|TODO' -R
