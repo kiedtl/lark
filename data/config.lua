@@ -13,22 +13,20 @@ config.port   = 6667
 -- string.
 --
 -- NOTE: config.password is simply a password
--- that issent to servers that require a password
+-- that is sent to servers that require a password
 -- for connecting. It IS NOT a NickServ password.
-config.username = "kiedtl"
-config.realname = "Mister Sir"
-config.nickname = "wchar_t"
+config.username = "larkbot"
+config.realname = "Lark Bot Account"
+config.nickname = "larkbot"
 config.password = nil
 
 -- --- --- --- ---
 
--- default parting message that is send with
--- the /quit or /part commands.
-config.parting = "Bye bye"
+-- channels to join on startup
+config.channels = { "#test", "#flood", "#botwar" }
 
--- character that inputs must be prefixed with
--- to be recognized as a command.
-config.commandPrefix = "/"
+-- default parting message that is sent on exit
+config.parting = "lark: github.com/lptstr/lark"
 
 -- TODO:
 --   default mode
