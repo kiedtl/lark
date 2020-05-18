@@ -30,12 +30,7 @@ function core.init()
 end
 
 function core.on_receive(usr, cmd, pars, txt)
-	local chan    = config.server
-	if cmd == "PRIVMSG" then
-		chan = pars
-	end
-
-	printf("%s: %12s %s: %s\n", chan, "-?-", cmd, txt)
+	printf("%s: %s: %s: %s\n", usr, cmd, pars, txt)
 end
 
 function core.on_timeout(last_receive)
