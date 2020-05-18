@@ -30,7 +30,7 @@ function core.init()
 end
 
 function core.on_receive(usr, cmd, pars, txt)
-	printf("%s: %s: %s: %s\n", usr, cmd, pars, txt)
+	printf("%s: %s(%s) %s\n", usr, cmd, pars, txt)
 end
 
 function core.on_timeout(last_receive)
