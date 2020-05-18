@@ -1,4 +1,4 @@
-local api      = require('api')
+local irc      = require('irc')
 local config   = require('config')
 local util     = require('core.util')
 local printf   = util.printf
@@ -6,16 +6,11 @@ local printf   = util.printf
 local core = {}
 
 function core.init()
-	local server = config.server or "irc.freenode.net"
-	local port   = config.port or 6667
-
-	-- TODO: handle disconnects, errors
 	-- connect to server
-	api.connect(server, port)
+	irc.connect(config.server, config.port)
 
 	-- set username, realname, etc
-	api.sendf(
-		"USER %s %s %s :%s",
+	irc.sendUser(
 		config.username,
 		util.getHostname(),
 		config.server,
@@ -23,14 +18,14 @@ function core.init()
 	)
 
 	-- set nickname
-	api.sendf("NICK %s", config.nickname)
+	irc.sendNick(config.nickname)
 
 	-- send password
-	api.sendf("PASS %s", config.password or "")
+	irc.sendPassword(config.password)
 
 	-- join channels
 	for chan = 1, #config.channels do
-		api.sendf("JOIN %s", config.channels[chan])
+		irc.joinChannel(config.channels[chan])
 	end
 end
 
@@ -52,7 +47,7 @@ function core.on_timeout(last_receive)
 	else
 		-- ping the server to check if they're still
 		-- there
-		api.sendf("PING %s", config.server);
+		irc.sendPing(config.server)
 	end
 end
 
@@ -64,9 +59,9 @@ end
 
 -- handle errors, SIGINT, etc
 function core.on_quit()
-	printf("%12s %s", "-!-",
-		"recieved exit, sending quit to host... ")
-	api.sendf("QUIT :%s", config.parting)
+	printf("warn: recieved exit, sending quit to host... ")
+
+	irc.sendQuit(config.parting)
 	printf("done\n")
 
 	os.exit(1)
