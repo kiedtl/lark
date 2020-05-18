@@ -59,7 +59,7 @@ end
 
 -- handle errors, SIGINT, etc
 function core.on_quit()
-	printf("warn: recieved exit, sending quit to host... ")
+	printf("warn: aborting, sending quit to host... ")
 
 	irc.sendQuit(config.parting)
 	printf("done\n")
